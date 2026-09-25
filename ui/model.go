@@ -4,12 +4,36 @@ import (
 	"calendartui/task"
 	"time"
 	tea "charm.land/bubbletea/v2"
+	"charm.land/bubbles/v2/textinput"
 )
+
+type Mode int
+
+const (
+	ModeList Mode = iota
+	ModeAdding
+	ModeEditing
+)
+
+func (m Mode) String() string {
+    switch m {
+    case ModeList:
+        return "list"
+    case ModeAdding:
+        return "adding"
+    case ModeEditing:
+        return "editing"
+    default:
+        return "unknown"
+    }
+}
 
 type Model struct {
 	Tasks           []task.Task
 	Cursor          int
 	ShowDescription bool
+	ViewMode Mode
+	TaskTitleInput textinput.Model
 }
 
 func (m Model) Init() tea.Cmd {
@@ -17,6 +41,12 @@ func (m Model) Init() tea.Cmd {
 }
 
 func InitialModel() Model {
+	TextInput := textinput.New()
+	TextInput.Placeholder = "Task Name"
+	TextInput.SetVirtualCursor(false)
+	TextInput.Focus()
+	TextInput.CharLimit = 156
+	TextInput.SetWidth(20)
 	return Model{
 		Tasks: []task.Task{
 			{
@@ -41,6 +71,8 @@ func InitialModel() Model {
 				IsCompleted: false,
 			},
 		},
+		ViewMode: 0,
 		Cursor: 0,
+		TaskTitleInput: TextInput,
 	}
 }

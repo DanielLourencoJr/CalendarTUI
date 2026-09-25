@@ -1,7 +1,7 @@
 package ui
 
 import (
-	lipgloss "github.com/charmbracelet/lipgloss"
+	lipgloss "charm.land/lipgloss/v2"
 )
 
 var (
