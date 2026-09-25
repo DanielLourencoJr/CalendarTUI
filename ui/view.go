@@ -2,8 +2,8 @@ package ui
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"fmt"
 	"charm.land/lipgloss/v2"
+	"fmt"
 )
 
 func (m Model) View() tea.View {
@@ -16,7 +16,7 @@ func (m Model) View() tea.View {
 				Cursor = ">"
 			}
 			row := fmt.Sprintf("%s %s", Cursor, t.Name)
-			
+
 			if t.IsCompleted {
 				row = DoneStyle.Render(row)
 			} else {
@@ -33,14 +33,14 @@ func (m Model) View() tea.View {
 	case ModeAdding:
 		var c *tea.Cursor
 		if !m.TaskTitleInput.VirtualCursor() {
-			if c != nil{
+			if c != nil {
 				c = m.TaskTitleInput.Cursor()
 				c.Y += lipgloss.Height(m.TaskTitleView())
 			}
 		}
 
 		str := lipgloss.JoinVertical(lipgloss.Top, m.TaskTitleView(), m.TaskTitleInput.View(), m.footerView())
-		
+
 		v := tea.NewView(str)
 		v.Cursor = c
 		return v
