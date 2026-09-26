@@ -10,23 +10,28 @@ func (m Model) View() tea.View {
 	switch m.ViewMode {
 	case ModeList:
 		s := "Your Tasks:\n\n"
-		for i, t := range m.Tasks {
-			Cursor := " "
-			if m.Cursor == i {
-				Cursor = ">"
-			}
-			row := fmt.Sprintf("%s %s", Cursor, t.Name)
 
-			if t.IsCompleted {
-				row = DoneStyle.Render(row)
-			} else {
-				row = PendingStyle.Render(row)
-			}
-			s += row + "\n"
-			if m.ShowDescription {
-				s += fmt.Sprintf("    %s\n", t.Description)
-			}
+		if len(m.Tasks) == 0 {
+			s += "No tasks yet. Press a to add one.\n"
+		} else {
+			for i, t := range m.Tasks {
+				Cursor := " "
+				if m.Cursor == i {
+					Cursor = ">"
+				}
+				row := fmt.Sprintf("%s %s", Cursor, t.Name)
 
+				if t.IsCompleted {
+					row = DoneStyle.Render(row)
+				} else {
+					row = PendingStyle.Render(row)
+				}
+				s += row + "\n"
+				if m.ShowDescription {
+					s += fmt.Sprintf("    %s\n", t.Description)
+				}
+
+			}
 		}
 		s += "\nPress q to quit\n"
 		return tea.NewView(s)

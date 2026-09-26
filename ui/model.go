@@ -48,30 +48,8 @@ func InitialModel() Model {
 	TextInput.CharLimit = 156
 	TextInput.SetWidth(20)
 	return Model{
-		Tasks: []task.Task{
-			{
-				Name:        "Study Go",
-				Description: "Learning a new programming language",
-				CreatedAt:   time.Now(),
-				UpdatedAt:   time.Now(),
-				IsCompleted: false,
-			},
-			{
-				Name:        "Make chapter exercises",
-				Description: "So I don't reprove in exams",
-				CreatedAt:   time.Now(),
-				UpdatedAt:   time.Now(),
-				IsCompleted: false,
-			},
-			{
-				Name:        "Keep reading that book",
-				Description: "It's very interessting. I shouldn't wait so much to resume reading.",
-				CreatedAt:   time.Now(),
-				UpdatedAt:   time.Now(),
-				IsCompleted: false,
-			},
-		},
-		ViewMode:       0,
+		Tasks:          []task.Task{},
+		ViewMode:       ModeList,
 		Cursor:         0,
 		TaskTitleInput: TextInput,
 	}
@@ -114,6 +92,9 @@ func (m Model) updateListing(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			m.Cursor++
 		}
 	case "space", "enter":
+		if len(m.Tasks) == 0 {
+			return m, nil
+		}
 		m.Tasks[m.Cursor].IsCompleted = !m.Tasks[m.Cursor].IsCompleted
 
 		m.Tasks[m.Cursor].UpdatedAt = time.Now()
