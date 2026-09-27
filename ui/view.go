@@ -19,18 +19,24 @@ func (m Model) View() tea.View {
 				if m.Cursor == i {
 					Cursor = ">"
 				}
-				row := fmt.Sprintf("%s %s", Cursor, t.Name)
-
+				description := fmt.Sprintf("    %s", t.Description)
+				dueTime := fmt.Sprintf("    %s", t.DueTime.Format("02/01/2006"))
+				
+				var nameRow string
 				if t.IsCompleted {
-					row = DoneStyle.Render(row)
+					nameRow = DoneTaskStyle.Render(t.Name)
+					description = DoneDetailsStyle.Render(description)
+					dueTime = DoneDetailsStyle.Render(dueTime)
 				} else {
-					row = PendingStyle.Render(row)
+					nameRow = PendingStyle.Render(t.Name)
 				}
-				s += row + "\n"
+				
+				nameRow = fmt.Sprintf("%s %s", Cursor, nameRow)
+				s += nameRow + "\n"
 				if m.ShowDetails {
-					s += fmt.Sprintf("    %s", t.Description)
-
-					s += fmt.Sprintf("    %s\n", t.DueTime.Format("02/01/2006"))
+					s += description
+					s += dueTime
+					s += "\n"
 				}
 
 			}
