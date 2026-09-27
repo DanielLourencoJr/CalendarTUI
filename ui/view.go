@@ -2,8 +2,8 @@ package ui
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 	"fmt"
+	"strings"
 )
 
 func (m Model) View() tea.View {
@@ -27,8 +27,10 @@ func (m Model) View() tea.View {
 					row = PendingStyle.Render(row)
 				}
 				s += row + "\n"
-				if m.ShowDescription {
-					s += fmt.Sprintf("    %s\n", t.Description)
+				if m.ShowDetails {
+					s += fmt.Sprintf("    %s", t.Description)
+
+					s += fmt.Sprintf("    %s\n", t.DueTime.Format("02/01/2006"))
 				}
 
 			}
@@ -36,19 +38,14 @@ func (m Model) View() tea.View {
 		s += "\nPress q to quit\n"
 		return tea.NewView(s)
 	case ModeAdding:
-		var c *tea.Cursor
-		if !m.TaskTitleInput.VirtualCursor() {
-			if c != nil {
-				c = m.TaskTitleInput.Cursor()
-				c.Y += lipgloss.Height(m.TaskTitleView())
+		var b strings.Builder
+		for i, _ := range m.Inputs {
+			b.WriteString(m.Inputs[i].View())
+			if i < len(m.Inputs)-1 {
+				b.WriteRune('\n')
 			}
 		}
-
-		str := lipgloss.JoinVertical(lipgloss.Top, m.TaskTitleView(), m.TaskTitleInput.View(), m.footerView())
-
-		v := tea.NewView(str)
-		v.Cursor = c
-		return v
+		return tea.NewView(b.String())
 	}
 	return tea.NewView("")
 }

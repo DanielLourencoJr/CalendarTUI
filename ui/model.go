@@ -29,11 +29,12 @@ func (m Mode) String() string {
 }
 
 type Model struct {
-	Tasks           []task.Task
-	Cursor          int
-	ShowDescription bool
-	ViewMode        Mode
-	TaskTitleInput  textinput.Model
+	Tasks       []task.Task
+	Cursor      int
+	ShowDetails bool
+	ViewMode    Mode
+	Inputs      []textinput.Model
+	FocusIndex  int
 }
 
 func (m Model) Init() tea.Cmd {
@@ -41,67 +42,66 @@ func (m Model) Init() tea.Cmd {
 }
 
 func InitialModel() Model {
-	TextInput := textinput.New()
-	TextInput.Placeholder = "Task Name"
-	TextInput.SetVirtualCursor(false)
-	TextInput.Focus()
-	TextInput.CharLimit = 156
-	TextInput.SetWidth(20)
+	TitleInput := textinput.New()
+	TitleInput.Placeholder = "Task Name"
+	TitleInput.SetVirtualCursor(false)
+	TitleInput.Focus()
+	TitleInput.CharLimit = 156
+	TitleInput.SetWidth(20)
+
+	DescriptionInput := textinput.New()
+	DescriptionInput.Placeholder = "Task Description"
+	DescriptionInput.SetVirtualCursor(false)
+	DescriptionInput.CharLimit = 1024
+	DescriptionInput.SetWidth(50)
+
+	DueTimeInput := textinput.New()
+	DueTimeInput.Placeholder = "Task Due Time"
+	DueTimeInput.SetVirtualCursor(false)
+	DueTimeInput.CharLimit = 156
+	DueTimeInput.SetWidth(20)
+
+	var inputs []textinput.Model
+	inputs = append(inputs, TitleInput)
+	inputs = append(inputs, DescriptionInput)
+	inputs = append(inputs, DueTimeInput)
+
 	return Model{
-		Tasks:          []task.Task{},
-		ViewMode:       ModeList,
-		Cursor:         0,
-		TaskTitleInput: TextInput,
+		Tasks:      []task.Task{},
+		ViewMode:   ModeList,
+		Cursor:     0,
+		Inputs:     inputs,
+		FocusIndex: 0,
 	}
 }
 
-func (m Model) updateAdding(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-	switch msg.String() {
-	case "ctrl+c":
-		return m, tea.Quit
-	case "esc":
-		m.ViewMode = ModeList
-		m.TaskTitleInput.SetValue("")
-	case "enter":
-		newTask := task.Task{
-			Name:      m.TaskTitleInput.Value(),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-		m.Tasks = append(m.Tasks, newTask)
-		m.TaskTitleInput.SetValue("")
-		m.ViewMode = ModeList
-	default:
-		m.TaskTitleInput, cmd = m.TaskTitleInput.Update(msg)
-		return m, cmd
+func (m *Model) clearInputs() {
+	for i := range m.Inputs {
+		m.Inputs[i].SetValue("")
 	}
-	return m, nil
 }
 
-func (m Model) updateListing(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	switch msg.String() {
-	case "ctrl+c", "q":
-		return m, tea.Quit
-	case "up", "k":
-		if m.Cursor > 0 {
-			m.Cursor--
+func (m *Model) saveTask() {
+	dueTime, err := time.Parse("02/01/2006", m.Inputs[2].Value())
+	var newTask task.Task
+	if err != nil {
+		newTask = task.Task{
+			Name:        m.Inputs[0].Value(),
+			Description: m.Inputs[1].Value(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
 		}
-	case "down", "j":
-		if m.Cursor < len(m.Tasks)-1 {
-			m.Cursor++
+	} else {
+		newTask = task.Task{
+			Name:        m.Inputs[0].Value(),
+			Description: m.Inputs[1].Value(),
+			DueTime:     dueTime,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
 		}
-	case "space", "enter":
-		if len(m.Tasks) == 0 {
-			return m, nil
-		}
-		m.Tasks[m.Cursor].IsCompleted = !m.Tasks[m.Cursor].IsCompleted
-
-		m.Tasks[m.Cursor].UpdatedAt = time.Now()
-	case "ctrl+o":
-		m.ShowDescription = !m.ShowDescription
-	case "a":
-		m.ViewMode = ModeAdding
 	}
-	return m, nil
+	m.Tasks = append(m.Tasks, newTask)
+	m.FocusIndex = 0
+	m.clearInputs()
+	m.ViewMode = ModeList
 }
