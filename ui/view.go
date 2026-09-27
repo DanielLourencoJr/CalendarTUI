@@ -21,7 +21,7 @@ func (m Model) View() tea.View {
 				}
 				description := fmt.Sprintf("    %s", t.Description)
 				dueTime := fmt.Sprintf("    %s", t.DueTime.Format("02/01/2006"))
-				
+
 				var nameRow string
 				if t.IsCompleted {
 					nameRow = DoneTaskStyle.Render(t.Name)
@@ -30,7 +30,7 @@ func (m Model) View() tea.View {
 				} else {
 					nameRow = PendingStyle.Render(t.Name)
 				}
-				
+
 				nameRow = fmt.Sprintf("%s %s", Cursor, nameRow)
 				s += nameRow + "\n"
 				if m.ShowDetails {

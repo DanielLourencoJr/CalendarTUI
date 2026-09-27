@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"calendartui/task"
 	tea "charm.land/bubbletea/v2"
 	"time"
 )
@@ -42,6 +43,19 @@ func (m Model) updateListing(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.ShowDetails = !m.ShowDetails
 	case "a":
 		m.ViewMode = ModeAdding
+	case "ctrl+d":
+		var newTasks []task.Task
+		for i, _ := range m.Tasks {
+			if i == m.Cursor {
+				continue
+			} else {
+				newTasks = append(newTasks, m.Tasks[i])
+			}
+		}
+		if m.Cursor == len(m.Tasks)-1 && m.Cursor != 0 {
+			m.Cursor = len(newTasks) - 1
+		}
+		m.Tasks = newTasks
 	}
 	return m, nil
 }

@@ -7,6 +7,6 @@ import (
 var (
 	DoneTaskStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("2")).Strikethrough(true)
 	DoneDetailsStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("8"))
-	PendingStyle = lipgloss.NewStyle()
-	TitleStyle   = lipgloss.NewStyle().Bold(true).Underline(true)
+	PendingStyle     = lipgloss.NewStyle()
+	TitleStyle       = lipgloss.NewStyle().Bold(true).Underline(true)
 )
