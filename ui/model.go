@@ -112,7 +112,11 @@ func (m *Model) createTask(newTask task.Task) {
 	if err != nil {
 		err.Error()
 	}
-	m.Tasks = append(m.Tasks, newTask)
+	tasks, err := m.Store.LoadAllTasks()
+	if err != nil {
+		return
+	}
+	m.Tasks = tasks
 }
 
 type DueTimeInfo struct {

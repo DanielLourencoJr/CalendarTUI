@@ -110,6 +110,16 @@ func (s *Store) CreateTask(newTask task.Task) error {
 	return err
 }
 
+func (s *Store) DeleteTask(taskId int) error {
+	_, err := s.db.Exec(`
+		DELETE FROM tasks WHERE id = ?
+	`, taskId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) Close() error {
 	return s.db.Close()
 }

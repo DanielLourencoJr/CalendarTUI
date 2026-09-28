@@ -44,6 +44,14 @@ func (m Model) updateListing(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "a":
 		m.ViewMode = ModeAdding
 	case "ctrl+d":
+		if len(m.Tasks) == 0 {
+			return m, nil
+		}
+		taskId := m.Tasks[m.Cursor].Id
+		err := m.Store.DeleteTask(taskId)
+		if err != nil {
+			return m, nil
+		}
 		var newTasks []task.Task
 		for i, _ := range m.Tasks {
 			if i == m.Cursor {

@@ -41,7 +41,7 @@ func (m Model) View() tea.View {
 
 			}
 		}
-		s += "\nPress q to quit\n"
+		s += fmt.Sprintf("\nPress q to quit | Cursor: %d | Task ID: %d\n", m.Cursor, m.Tasks[m.Cursor].Id)
 		return tea.NewView(s)
 	case ModeAdding:
 		var b strings.Builder
