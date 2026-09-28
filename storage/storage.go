@@ -120,6 +120,20 @@ func (s *Store) DeleteTask(taskId int) error {
 	return nil
 }
 
+func (s *Store) ToggleCompletion(task task.Task) error {
+	taskId := task.Id
+	newStatus := !task.IsCompleted
+	_, err := s.db.Exec(`
+		UPDATE tasks
+		SET is_completed == ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, taskId, newStatus)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) Close() error {
 	return s.db.Close()
 }

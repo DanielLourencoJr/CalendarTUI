@@ -3,7 +3,6 @@ package ui
 import (
 	"calendartui/task"
 	tea "charm.land/bubbletea/v2"
-	"time"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -36,9 +35,12 @@ func (m Model) updateListing(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		if len(m.Tasks) == 0 {
 			return m, nil
 		}
-		m.Tasks[m.Cursor].IsCompleted = !m.Tasks[m.Cursor].IsCompleted
-
-		m.Tasks[m.Cursor].UpdatedAt = time.Now()
+		m.Store.ToggleCompletion(m.Tasks[m.Cursor])
+		tasks, err := m.Store.LoadAllTasks()
+		if err != nil {
+			return m, nil
+		}
+		m.Tasks = tasks
 	case "ctrl+o":
 		m.ShowDetails = !m.ShowDetails
 	case "a":
