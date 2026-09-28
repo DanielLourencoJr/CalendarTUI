@@ -110,7 +110,7 @@ func (m *Model) saveTask() {
 func (m *Model) createTask(newTask task.Task) {
 	err := m.Store.CreateTask(newTask)
 	if err != nil {
-		err.Error()
+		return
 	}
 	tasks, err := m.Store.LoadAllTasks()
 	if err != nil {
